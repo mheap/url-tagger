@@ -5,6 +5,7 @@ const extractor = require("unfluff");
 let UrlTagger = function(regex, rules) {
   this.urlRules = new RegexRules(regex, rules.url);
   this.contentRules = new RegexRules(regex, rules.content);
+  this.htmlRules = new RegexRules(regex, rules.html);
 };
 
 UrlTagger.prototype.runUrl = function(url) {
@@ -22,7 +23,18 @@ UrlTagger.prototype.runUrl = function(url) {
 
 UrlTagger.prototype.runContent = async function(url) {
   let results = [];
-  let content = await this.getContent(url);
+
+  // Match on the raw HTML
+  let html = await request.get(url);
+  let htmlTags = this.htmlRules.run(html);
+  for (let r in htmlTags) {
+    if (htmlTags[r]) {
+      results.push(r);
+    }
+  }
+
+  // And on the extracted content body
+  let content = await this.getContent(html);
   let contentTags = this.contentRules.run(content);
   for (let r in contentTags) {
     if (contentTags[r]) {
@@ -42,8 +54,8 @@ UrlTagger.prototype.run = async function(url) {
   });
 };
 
-UrlTagger.prototype.getContent = async function(url) {
-  return extractor(await request.get(url)).text;
+UrlTagger.prototype.getContent = async function(html) {
+  return extractor(html).text;
 };
 
 module.exports = UrlTagger;

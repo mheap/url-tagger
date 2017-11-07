@@ -53,6 +53,7 @@ describe("UrlTagger", function() {
   describe("#runContent", function() {
     const tagger = new UrlTagger(
       {
+        "michael-html": 'id="post-1688"',
         "is-michael": "I like to learn and I like to teach",
         "contains-sinon": "Sinon",
         "contains-testing": "Test"
@@ -63,11 +64,21 @@ describe("UrlTagger", function() {
           michael: ["is-michael"],
           "is-sinon": ["contains-sinon"],
           "is-js-testing": [["contains-sinon", "contains-testing"]]
+        },
+        html: {
+          "michael-html": ["michael-html"]
         }
       }
     );
 
-    it("matches a single rule", function() {
+    it("matches a single html rule", function() {
+      this.sandbox.stub(request, "get").resolves(mockUrl("michaelheap.com"));
+      return expect(
+        tagger.runContent("https://michaelheap.com")
+      ).to.eventually.eql(["michael-html", "michael"]);
+    });
+
+    it("matches a single content rule", function() {
       this.sandbox.stub(request, "get").resolves(mockUrl("michaelheap.com"));
       return expect(
         tagger.runContent("https://michaelheap.com")
