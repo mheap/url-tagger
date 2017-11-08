@@ -71,18 +71,11 @@ describe("UrlTagger", function() {
       }
     );
 
-    it("matches a single html rule", function() {
+    it("matches a both html and content rules", function() {
       this.sandbox.stub(request, "get").resolves(mockUrl("michaelheap.com"));
       return expect(
         tagger.runContent("https://michaelheap.com")
       ).to.eventually.eql(["michael-html", "michael"]);
-    });
-
-    it("matches a single content rule", function() {
-      this.sandbox.stub(request, "get").resolves(mockUrl("michaelheap.com"));
-      return expect(
-        tagger.runContent("https://michaelheap.com")
-      ).to.eventually.eql(["michael"]);
     });
 
     it("matches multiple rules", function() {
