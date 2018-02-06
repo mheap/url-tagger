@@ -15,7 +15,7 @@ const tagger = new UrlTagger(
   },
   {
     url: {
-      "michael-url": ["is-michael-domain"]
+      "michael-url": ["is-michael-domain"],
       "michael-secure-url": [["is-michael-domain", "is-https"]]
     },
     content: {
