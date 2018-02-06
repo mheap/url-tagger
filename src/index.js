@@ -2,14 +2,14 @@ const RegexRules = require("regex-rules");
 const request = require("request-promise");
 const extractor = require("unfluff");
 const Cacheman = require("cacheman");
-const crypto = require('crypto');
+const crypto = require("crypto");
 
 let UrlTagger = function(regex, rules, cache) {
   this.urlRules = new RegexRules(regex, rules.url);
   this.contentRules = new RegexRules(regex, rules.content);
   this.htmlRules = new RegexRules(regex, rules.html);
   if (cache) {
-    this.cache = new Cacheman('urltagger', cache);
+    this.cache = new Cacheman("urltagger", cache);
   }
 };
 
@@ -63,7 +63,7 @@ UrlTagger.prototype.getContent = function(html) {
   return extractor(html).text;
 };
 
-UrlTagger.prototype.fetchContent = async function(url){
+UrlTagger.prototype.fetchContent = async function(url) {
   if (this.cache) {
     let hash = this.hashString(url);
     try {
@@ -77,14 +77,16 @@ UrlTagger.prototype.fetchContent = async function(url){
       }
 
       return html;
-    } catch (e) {
-    }
+    } catch (e) {}
   }
   return await request.get(url);
-}
+};
 
-UrlTagger.prototype.hashString = function(str){
-  return crypto.createHash('md5').update(str).digest("hex");
-}
+UrlTagger.prototype.hashString = function(str) {
+  return crypto
+    .createHash("md5")
+    .update(str)
+    .digest("hex");
+};
 
 module.exports = UrlTagger;
