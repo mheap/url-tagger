@@ -1,7 +1,7 @@
 {
     "name": "url-tagger",
     "description": "Provide a URL and have it tagged based on a set of regular expressions",
-    "version": "0.0.2",
+    "version": "0.1.0",
     "main": "src/index.js",
     "scripts": {
         "test": "nyc mocha",
@@ -9,6 +9,8 @@
         "lint-fix": "eslint --fix src test"
     },
     "dependencies": {
+        "cacheman": "^2.2.1",
+        "cacheman-file": "^0.2.1",
         "regex-rules": "0.0.1",
         "request": "^2.83.0",
         "request-promise": "^4.2.2",
@@ -23,6 +25,7 @@
         "mocha": "^4.0.1",
         "nyc": "^11.2.1",
         "prettier": "^1.7.4",
-        "sinon": "^4.1.1"
+        "sinon": "^4.1.1",
+        "sinon-chai": "^2.14.0"
     }
 }

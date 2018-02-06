@@ -1,11 +1,14 @@
 const sinon = require("sinon");
 const chai = require("chai");
 const chaiAsPromised = require("chai-as-promised");
+const sinonChai = require("sinon-chai");
 chai.use(chaiAsPromised);
+chai.use(sinonChai);
 const expect = chai.expect;
 
 const fs = require("fs");
 const request = require("request-promise");
+const Cacheman = require("cacheman");
 const UrlTagger = require("../src/index");
 
 describe("UrlTagger", function() {
@@ -135,6 +138,76 @@ describe("UrlTagger", function() {
       this.sandbox.stub(request, "get").resolves("This is an example");
       return expect(tagger.run("https://example.com")).to.eventually.eql([]);
     });
+  });
+
+  describe("#fetchContent", function() {
+    it("runs successfully without a cache", function() {
+        const tagger = new UrlTagger(
+            { "is-michael-content": "I like to learn and I like to teach" },
+            { content: { "michael-content": ["is-michael-content"] } }
+        );
+        this.sandbox.stub(request, "get").resolves(mockUrl("michaelheap.com"));
+        return expect(tagger.run("https://example.com")).to.eventually.eql([
+            "michael-content"
+        ]);
+    });
+
+    it("stores the result in the cache if not found", async function() {
+        const tagger = new UrlTagger(
+            { "is-michael-content": "I like to learn and I like to teach" },
+            { content: { "michael-content": ["is-michael-content"] } },
+            { "engine": "file" }
+        );
+
+        let content = mockUrl("michaelheap.com");
+        let httpMock = this.sandbox.stub(request, "get").resolves(content);
+        let cacheGetMock = this.sandbox.stub(tagger.cache, "get").resolves(null);
+        let cacheSetMock = this.sandbox.stub(tagger.cache, "set");
+
+        let res = await expect(tagger.run("https://example.com")).to.eventually.eql([
+            "michael-content"
+        ]);
+
+        // We should have tried to get it from the cache
+        expect(cacheGetMock).to.be.calledOnce;
+        expect(cacheGetMock).to.be.calledWith("c984d06aafbecf6bc55569f964148ea3");
+
+        // When we didn't find it, we made a HTTP request
+        expect(httpMock).to.be.calledOnce;
+        expect(httpMock).to.be.calledWith("https://example.com");
+
+        // Then the result was stored in the cache
+        expect(cacheSetMock).to.be.calledOnce;
+        expect(cacheSetMock).to.be.calledWith("c984d06aafbecf6bc55569f964148ea3", content, 86400);
+    });
+
+    it("returns direct from the cache if found", async function() {
+        const tagger = new UrlTagger(
+            { "is-michael-content": "I like to learn and I like to teach" },
+            { content: { "michael-content": ["is-michael-content"] } },
+            { "engine": "file" }
+        );
+
+        let content = mockUrl("michaelheap.com");
+        let httpMock = this.sandbox.stub(request, "get");
+        let cacheGetMock = this.sandbox.stub(tagger.cache, "get").resolves(content);
+        let cacheSetMock = this.sandbox.stub(tagger.cache, "set");
+
+        let res = await expect(tagger.run("https://example.com")).to.eventually.eql([
+            "michael-content"
+        ]);
+
+        // We should have tried to get it from the cache, and found it!
+        expect(cacheGetMock).to.be.calledOnce;
+        expect(cacheGetMock).to.be.calledWith("c984d06aafbecf6bc55569f964148ea3");
+
+        // Which means no HTTP call
+        expect(httpMock).to.not.be.called;
+
+        // And nothing to store in the cache
+        expect(cacheSetMock).to.not.be.called;
+    });
+
   });
 });
 
