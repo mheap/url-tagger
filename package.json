@@ -1,7 +1,7 @@
 {
     "name": "url-tagger",
     "description": "Provide a URL and have it tagged based on a set of regular expressions",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "main": "src/index.js",
     "scripts": {
         "test": "nyc mocha",
@@ -11,7 +11,7 @@
     "dependencies": {
         "cacheman": "^2.2.1",
         "cacheman-file": "^0.2.1",
-        "regex-rules": "0.0.1",
+        "regex-rules": "^0.0.2",
         "request": "^2.83.0",
         "request-promise": "^4.2.2",
         "unfluff": "^1.1.0"

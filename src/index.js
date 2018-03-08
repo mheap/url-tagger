@@ -5,9 +5,11 @@ const Cacheman = require("cacheman");
 const crypto = require("crypto");
 
 let UrlTagger = function(regex, rules, cache) {
-  this.urlRules = new RegexRules(regex, rules.url);
-  this.contentRules = new RegexRules(regex, rules.content);
-  this.htmlRules = new RegexRules(regex, rules.html);
+  let options = {case_insensitive: true};
+  this.urlRules = new RegexRules(regex, rules.url, options);
+  this.contentRules = new RegexRules(regex, rules.content, options);
+  this.htmlRules = new RegexRules(regex, rules.html, options);
+
   if (cache) {
     this.cache = new Cacheman("urltagger", cache);
   }
