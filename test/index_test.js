@@ -83,9 +83,9 @@ describe("UrlTagger", function() {
 
     it("matches multiple rules", function() {
       this.sandbox.stub(request, "get").resolves(mockUrl("sinonjs.org"));
-      return expect(tagger.runContent("https://sinonjs.org")).to.eventually.eql(
-        ["is-sinon", "is-js-testing"]
-      );
+      return expect(
+        tagger.runContent("https://sinonjs.org")
+      ).to.eventually.eql(["is-sinon", "is-js-testing"]);
     });
 
     it("matches no rules", function() {
