@@ -2,8 +2,6 @@
 
 Provide a list of URLs, regexes and tags and have the URL returned with associated tags
 
-[![Build Status](https://api.travis-ci.org/mheap/url-tagger.svg?branch=master)](https://travis-ci.org/mheap/url-tagger)
-
 ### Usage
 
 ```javascript
