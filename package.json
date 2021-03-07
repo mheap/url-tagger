@@ -12,20 +12,20 @@
         "cacheman": "^2.2.1",
         "cacheman-file": "^0.2.1",
         "regex-rules": "^0.0.2",
-        "request": "^2.83.0",
-        "request-promise": "^4.2.2",
+        "request": "^2.88.2",
+        "request-promise": "^4.2.6",
         "unfluff": "^3.2.0"
     },
     "devDependencies": {
-        "chai": "^4.1.2",
+        "chai": "^4.3.3",
         "chai-as-promised": "^7.1.1",
-        "eslint": "^4.9.0",
-        "eslint-config-prettier": "^2.6.0",
-        "eslint-plugin-prettier": "^2.3.1",
+        "eslint": "^4.19.1",
+        "eslint-config-prettier": "^2.10.0",
+        "eslint-plugin-prettier": "^2.7.0",
         "mocha": "^8.2.1",
         "nyc": "^15.1.0",
-        "prettier": "^1.7.4",
-        "sinon": "^4.1.1",
+        "prettier": "^1.19.1",
+        "sinon": "^4.5.0",
         "sinon-chai": "^2.14.0"
     }
 }
