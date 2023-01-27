@@ -1,7 +1,7 @@
 {
     "name": "url-tagger",
     "description": "Provide a URL and have it tagged based on a set of regular expressions",
-    "version": "0.1.4",
+    "version": "0.1.5",
     "main": "src/index.js",
     "scripts": {
         "test": "nyc mocha",
