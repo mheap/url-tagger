@@ -6,6 +6,7 @@ chai.use(chaiAsPromised);
 chai.use(sinonChai);
 const expect = chai.expect;
 
+
 const fs = require("fs");
 const request = require("request-promise");
 const Cacheman = require("cacheman");
@@ -13,7 +14,7 @@ const UrlTagger = require("../src/index");
 
 describe("UrlTagger", function() {
   beforeEach(function() {
-    this.sandbox = sinon.sandbox.create();
+    this.sandbox = sinon.createSandbox();
   });
 
   afterEach(function() {
