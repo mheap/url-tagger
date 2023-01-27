@@ -5,7 +5,7 @@ const Cacheman = require("cacheman");
 const crypto = require("crypto");
 
 let UrlTagger = function (regex, rules, cache) {
-  let options = { case_insensitive: true };
+  let options = { case_insensitive: true, allow_direct_regex: true };
   this.urlRules = new RegexRules(regex, rules.url, options);
   this.contentRules = new RegexRules(regex, rules.content, options);
   this.htmlRules = new RegexRules(regex, rules.html, options);
