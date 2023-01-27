@@ -11,21 +11,21 @@
     "dependencies": {
         "cacheman": "^2.2.1",
         "cacheman-file": "^0.2.1",
-        "regex-rules": "^0.0.2",
+        "regex-rules": "^0.1.0",
         "request": "^2.88.2",
         "request-promise": "^4.2.6",
         "unfluff": "^3.2.0"
     },
     "devDependencies": {
-        "chai": "^4.3.3",
+        "chai": "^4.3.7",
         "chai-as-promised": "^7.1.1",
-        "eslint": "^4.19.1",
-        "eslint-config-prettier": "^2.10.0",
-        "eslint-plugin-prettier": "^2.7.0",
-        "mocha": "^8.2.1",
+        "eslint": "^8.32.0",
+        "eslint-config-prettier": "^8.6.0",
+        "eslint-plugin-prettier": "^4.2.1",
+        "mocha": "^10.2.0",
         "nyc": "^15.1.0",
-        "prettier": "^1.19.1",
-        "sinon": "^4.5.0",
-        "sinon-chai": "^2.14.0"
+        "prettier": "^2.8.3",
+        "sinon": "^15.0.1",
+        "sinon-chai": "^3.7.0"
     }
 }

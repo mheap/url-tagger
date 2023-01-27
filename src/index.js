@@ -4,7 +4,7 @@ const extractor = require("unfluff");
 const Cacheman = require("cacheman");
 const crypto = require("crypto");
 
-let UrlTagger = function(regex, rules, cache) {
+let UrlTagger = function (regex, rules, cache) {
   let options = { case_insensitive: true };
   this.urlRules = new RegexRules(regex, rules.url, options);
   this.contentRules = new RegexRules(regex, rules.content, options);
@@ -15,7 +15,7 @@ let UrlTagger = function(regex, rules, cache) {
   }
 };
 
-UrlTagger.prototype.runUrl = function(url) {
+UrlTagger.prototype.runUrl = function (url) {
   let results = [];
 
   let urlTags = this.urlRules.run(url);
@@ -28,7 +28,7 @@ UrlTagger.prototype.runUrl = function(url) {
   return results;
 };
 
-UrlTagger.prototype.runContent = async function(url) {
+UrlTagger.prototype.runContent = async function (url) {
   let results = [];
 
   // Match on the raw HTML
@@ -51,21 +51,21 @@ UrlTagger.prototype.runContent = async function(url) {
   return results;
 };
 
-UrlTagger.prototype.run = async function(url) {
+UrlTagger.prototype.run = async function (url) {
   let arr = this.runUrl(url)
     .concat(await this.runContent(url))
     .sort();
 
-  return arr.filter(function(e, i, arr) {
+  return arr.filter(function (e, i, arr) {
     return arr.lastIndexOf(e) === i;
   });
 };
 
-UrlTagger.prototype.getContent = function(html) {
+UrlTagger.prototype.getContent = function (html) {
   return extractor(html).text;
 };
 
-UrlTagger.prototype.fetchContent = async function(url) {
+UrlTagger.prototype.fetchContent = async function (url) {
   if (this.cache) {
     let hash = this.hashString(url);
     try {
@@ -84,11 +84,8 @@ UrlTagger.prototype.fetchContent = async function(url) {
   return await request.get(url);
 };
 
-UrlTagger.prototype.hashString = function(str) {
-  return crypto
-    .createHash("md5")
-    .update(str)
-    .digest("hex");
+UrlTagger.prototype.hashString = function (str) {
+  return crypto.createHash("md5").update(str).digest("hex");
 };
 
 module.exports = UrlTagger;

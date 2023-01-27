@@ -11,84 +11,84 @@ const request = require("request-promise");
 const Cacheman = require("cacheman");
 const UrlTagger = require("../src/index");
 
-describe("UrlTagger", function() {
-  beforeEach(function() {
-    this.sandbox = sinon.sandbox.create();
+describe("UrlTagger", function () {
+  beforeEach(function () {
+    this.sandbox = sinon.createSandbox();
   });
 
-  afterEach(function() {
+  afterEach(function () {
     this.sandbox.restore();
   });
 
-  describe("#runUrl", function() {
+  describe("#runUrl", function () {
     const tagger = new UrlTagger(
       {
         "contains-github": "//github.com/",
-        "is-https": "^https://"
+        "is-https": "^https://",
       },
       {
         url: {
           github: ["contains-github"],
           "not-https": ["!is-https"],
-          "github-not-https": [["!is-https", "contains-github"]]
+          "github-not-https": [["!is-https", "contains-github"]],
         },
-        content: {}
+        content: {},
       }
     );
 
-    it("matches a single rule", function() {
+    it("matches a single rule", function () {
       expect(tagger.runUrl("https://github.com/mheap")).to.eql(["github"]);
     });
 
-    it("matches multiple rules", function() {
+    it("matches multiple rules", function () {
       expect(tagger.runUrl("http://github.com/mheap")).to.eql([
         "github",
         "not-https",
-        "github-not-https"
+        "github-not-https",
       ]);
     });
 
-    it("matches no rules", function() {
+    it("matches no rules", function () {
       expect(tagger.runUrl("https://google.com")).to.eql([]);
     });
   });
 
-  describe("#runContent", function() {
+  describe("#runContent", function () {
     const tagger = new UrlTagger(
       {
         "michael-html": 'id="post-1688"',
         "is-michael": "I like to learn and I like to teach",
         "contains-sinon": "Sinon",
-        "contains-testing": "Test"
+        "contains-testing": "Test",
       },
       {
         url: {},
         content: {
           michael: ["is-michael"],
           "is-sinon": ["contains-sinon"],
-          "is-js-testing": [["contains-sinon", "contains-testing"]]
+          "is-js-testing": [["contains-sinon", "contains-testing"]],
         },
         html: {
-          "michael-html": ["michael-html"]
-        }
+          "michael-html": ["michael-html"],
+        },
       }
     );
 
-    it("matches a both html and content rules", function() {
+    it("matches a both html and content rules", function () {
       this.sandbox.stub(request, "get").resolves(mockUrl("michaelheap.com"));
       return expect(
         tagger.runContent("https://michaelheap.com")
       ).to.eventually.eql(["michael-html", "michael"]);
     });
 
-    it("matches multiple rules", function() {
+    it("matches multiple rules", function () {
       this.sandbox.stub(request, "get").resolves(mockUrl("sinonjs.org"));
-      return expect(
-        tagger.runContent("https://sinonjs.org")
-      ).to.eventually.eql(["is-sinon", "is-js-testing"]);
+      return expect(tagger.runContent("https://sinonjs.org")).to.eventually.eql(
+        ["is-sinon", "is-js-testing"]
+      );
     });
 
-    it("matches no rules", function() {
+    it("matches no rules", function () {
       this.sandbox.stub(request, "get").resolves("This is an example");
       return expect(tagger.runContent("https://example.com")).to.eventually.eql(
         []
@@ -96,63 +96,63 @@ describe("UrlTagger", function() {
     });
   });
 
-  describe("#run", function() {
+  describe("#run", function () {
     const tagger = new UrlTagger(
       {
         "is-michael-domain": "michaelheap.com",
-        "is-michael-content": "I like to learn and I like to teach"
+        "is-michael-content": "I like to learn and I like to teach",
       },
       {
         url: {
-          "michael-url": ["is-michael-domain"]
+          "michael-url": ["is-michael-domain"],
         },
         content: {
-          "michael-content": ["is-michael-content"]
-        }
+          "michael-content": ["is-michael-content"],
+        },
       }
     );
 
-    it("matches against both the URL and content", function() {
+    it("matches against both the URL and content", function () {
       this.sandbox.stub(request, "get").resolves(mockUrl("michaelheap.com"));
       return expect(tagger.run("https://michaelheap.com")).to.eventually.eql([
         "michael-content",
-        "michael-url"
+        "michael-url",
       ]);
     });
 
-    it("matches the content only", function() {
+    it("matches the content only", function () {
       this.sandbox.stub(request, "get").resolves(mockUrl("michaelheap.com"));
       return expect(tagger.run("https://example.com")).to.eventually.eql([
-        "michael-content"
+        "michael-content",
       ]);
     });
 
-    it("matches the url only", function() {
+    it("matches the url only", function () {
       this.sandbox.stub(request, "get").resolves("This is an example");
       return expect(tagger.run("https://michaelheap.com")).to.eventually.eql([
-        "michael-url"
+        "michael-url",
       ]);
     });
 
-    it("matches no rules", function() {
+    it("matches no rules", function () {
       this.sandbox.stub(request, "get").resolves("This is an example");
       return expect(tagger.run("https://example.com")).to.eventually.eql([]);
     });
   });
 
-  describe("#fetchContent", function() {
-    it("runs successfully without a cache", function() {
+  describe("#fetchContent", function () {
+    it("runs successfully without a cache", function () {
       const tagger = new UrlTagger(
         { "is-michael-content": "I like to learn and I like to teach" },
         { content: { "michael-content": ["is-michael-content"] } }
       );
       this.sandbox.stub(request, "get").resolves(mockUrl("michaelheap.com"));
       return expect(tagger.run("https://example.com")).to.eventually.eql([
-        "michael-content"
+        "michael-content",
       ]);
     });
 
-    it("stores the result in the cache if not found", async function() {
+    it("stores the result in the cache if not found", async function () {
       const tagger = new UrlTagger(
         { "is-michael-content": "I like to learn and I like to teach" },
         { content: { "michael-content": ["is-michael-content"] } },
@@ -185,7 +185,7 @@ describe("UrlTagger", function() {
       );
     });
 
-    it("returns direct from the cache if found", async function() {
+    it("returns direct from the cache if found", async function () {
       const tagger = new UrlTagger(
         { "is-michael-content": "I like to learn and I like to teach" },
         { content: { "michael-content": ["is-michael-content"] } },
