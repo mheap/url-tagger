@@ -1,8 +1,15 @@
 const RegexRules = require("regex-rules");
-const request = require("request-promise");
-const extractor = require("unfluff");
+let fetch = require("node-fetch");
+const striptags = require("striptags");
 const Cacheman = require("cacheman");
 const crypto = require("crypto");
+const debug = require("debug")("url-tagger");
+
+const fetchLog = debug.extend("fetch");
+const extractLog = debug.extend("extract");
+const errorLog = debug.extend("error");
+
+const maxContentSize = 1048576 * (process.env.URL_TAGGER_MAX_CONTENT_MB || 3);
 
 let UrlTagger = function (regex, rules, cache) {
   let options = { case_insensitive: true, allow_direct_regex: true };
@@ -41,7 +48,7 @@ UrlTagger.prototype.runContent = async function (url) {
   }
 
   // And on the extracted content body
-  let content = this.getContent(html);
+  let content = this.getContent(html, url);
   let contentTags = this.contentRules.run(content);
   for (let r in contentTags) {
     if (contentTags[r]) {
@@ -61,11 +68,22 @@ UrlTagger.prototype.run = async function (url) {
   });
 };
 
-UrlTagger.prototype.getContent = function (html) {
-  return extractor(html).text;
+let i = 0;
+UrlTagger.prototype.getContent = function (html, url) {
+  if (html.length == 0) {
+    return "";
+  }
+
+  // Skip anything > maxContentSize (3mb by default)
+  if (html.length > maxContentSize) {
+    return "";
+  }
+  extractLog("[" + i++ + "]: " + url + " :: " + html.length);
+  return striptags(html);
 };
 
 UrlTagger.prototype.fetchContent = async function (url) {
+  fetchLog("Fetch: " + url);
   if (this.cache) {
     let hash = this.hashString(url);
     try {
@@ -74,14 +92,23 @@ UrlTagger.prototype.fetchContent = async function (url) {
       // If we didn't find it in the cache, we need to
       // fetch the HTML from the site
       if (!html) {
-        html = await request.get(url);
+        fetchLog("Cache Miss: " + url);
+        const r = await fetch(url);
+        html = await r.text();
         await this.cache.set(hash, html, 86400);
       }
 
+      fetchLog("Cache Hit: " + url);
       return html;
-    } catch (e) {}
+    } catch (e) {
+      errorLog("Cache Error: " + e);
+      return "";
+    }
   }
-  return await request.get(url);
+
+  fetchLog("No Cache: " + url);
+  const r = await fetch(url, { timeout: 10000 });
+  return await r.text();
 };
 
 UrlTagger.prototype.hashString = function (str) {
