@@ -11,10 +11,11 @@
     "dependencies": {
         "cacheman": "^2.2.1",
         "cacheman-file": "^0.2.1",
+        "debug": "^4.3.4",
+        "node-fetch": "^2.6.9",
         "regex-rules": "^0.1.0",
         "request": "^2.88.2",
-        "request-promise": "^4.2.6",
-        "unfluff": "^3.2.0"
+        "striptags": "^3.2.0"
     },
     "devDependencies": {
         "chai": "^4.3.7",
@@ -23,6 +24,7 @@
         "eslint-config-prettier": "^8.6.0",
         "eslint-plugin-prettier": "^4.2.1",
         "mocha": "^10.2.0",
+        "nock": "^13.3.0",
         "nyc": "^15.1.0",
         "prettier": "^2.8.3",
         "sinon": "^15.0.1",
